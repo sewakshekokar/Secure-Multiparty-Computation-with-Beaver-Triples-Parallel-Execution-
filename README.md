@@ -71,22 +71,3 @@ P3 splits inputs into additive shares and sends them to P0 and P1.
 
 P2 distributes Beaver triples to P0 and P1.
    
-## Protocol Flow
-
-```mermaid
-sequenceDiagram
-    participant P3 as P3 (Client)
-    participant P0 as P0
-    participant P1 as P1
-    participant P2 as P2 (Helper)
-
-    P3 ->> P0: Send (x0, y0, y0_next)
-    P3 ->> P1: Send (x1, y1, y1_next)
-
-    P2 ->> P0: Send (a0, b0, c0)
-    P2 ->> P1: Send (a1, b1, c1)
-
-    P0 ->> P1: Send (d0, e0)
-    P1 ->> P0: Send (d1, e1)
-
-    Note over P0,P1: Each computes z0, z1 <br/> Final result: z = z0 + z1
