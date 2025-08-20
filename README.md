@@ -1,6 +1,6 @@
-# Secure Multiparty Computation with Beaver Triples (C# Implementation)
+# Secure Multiparty Computation with Beaver Triples (Sequential Execution)
 
-This project demonstrates a simple **Secure Multiparty Computation (MPC)** protocol for multiplying secret-shared values using **Beaver triples**, implemented in **C#**.
+This project demonstrates a simple **Secure Multiparty Computation (MPC)** protocol for multiplying secret-shared values using **Beaver triples**, implemented in **python**.
 
 The system consists of **four parties**:
 
@@ -11,12 +11,14 @@ The system consists of **four parties**:
 
 ---
 
-## 📖 Overview
+## Overview
 
 The goal is to securely compute the product:
 
-1. `z = x * y`  
-2. `z2 = z * y_next`  
+1. `z1 = x * y`  
+2. `z = z1 * z2`  
+
+**Note:** Here the z2 is y_next.
 
 without revealing `x`, `y`, or `y_next` to any single party.  
 
@@ -28,14 +30,8 @@ This is achieved with **additive secret sharing** and **Beaver triples**:
 
 ---
 
-## ⚙️ Requirements
 
-- .NET 6.0 or later  
-- Works on Windows, Linux, macOS  
-
----
-
-## 📂 Files
+## Files
 
 - **`P0.cs`** → Party 0 (computes `z0` shares)  
 - **`P1.cs`** → Party 1 (computes `z1` shares)  
@@ -43,8 +39,39 @@ This is achieved with **additive secret sharing** and **Beaver triples**:
 - **`P3_Client.cs`** → Provides inputs, generates shares, and distributes them  
 
 ---
+## Requirements
 
-## 🔌 Protocol Flow
+- Python 3.x  
+- Only standard libraries are used:  
+  - `socket`  
+  - `json`  
+  - `random`  
+  - `time`
+ 
+---
+## Running the Protocol
+
+The parties must be started in the following order to avoid connection issues:  
+
+1. **Start Party 0**  
+   ```bash
+   python3 p0.py
+2. **Start Party 1**
+   ```bash
+   python3 p1.py
+
+3. **Start Client (P3)**
+   ```bash
+    python3 p3_client.py
+P3 splits inputs into additive shares and sends them to P0 and P1.
+
+4. **Start Helper (P2)**
+   ```bash
+    python3 p2_helper.py
+
+P2 distributes Beaver triples to P0 and P1.
+   
+## Protocol Flow
 
 ```mermaid
 sequenceDiagram
