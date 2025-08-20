@@ -33,10 +33,10 @@ This is achieved with **additive secret sharing** and **Beaver triples**:
 
 ## Files
 
-- **`P0.cs`** → Party 0 (computes `z0` shares)  
-- **`P1.cs`** → Party 1 (computes `z1` shares)  
-- **`P2_Helper.cs`** → Generates Beaver triples and distributes them  
-- **`P3_Client.cs`** → Provides inputs, generates shares, and distributes them  
+- **`P0.py`** → Party 0 (computes `z0` shares)  
+- **`P1.py`** → Party 1 (computes `z1` shares)  
+- **`P2_Helper.py`** → Generates Beaver triples and distributes them  
+- **`P3_Client.py`** → Provides inputs, generates shares, and distributes them  
 
 ---
 ## Requirements
