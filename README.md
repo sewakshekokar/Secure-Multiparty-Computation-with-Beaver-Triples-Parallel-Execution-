@@ -1,73 +1,53 @@
-# Secure Multiparty Computation with Beaver Triples (Sequential Execution)
+# Secure Multiplication with Beaver Triples (Parallel Execution)
 
-This project demonstrates a simple **Secure Multiparty Computation (MPC)** protocol for multiplying secret-shared values using **Beaver triples**, implemented in **python**.
-
-The system consists of **four parties**:
-
-- **P0** → Party 0 (computing party)  
-- **P1** → Party 1 (computing party)  
-- **P2 (Helper)** → Provides Beaver triples  
-- **P3 (Client)** → Provides inputs and splits them into shares  
+This project implements **Secure Multi-Party Computation (MPC)** for multiplication using **Beaver triples**.  
+It demonstrates **parallel secure multiplications** across multiple parties using Python sockets and threading.
 
 ---
 
-## Overview
+## Parties
 
-The goal is to securely compute the product:
-
-1. `z1 = x * y`  
-2. `z = z1 * z2`  
-
-**Note:** Here the z2 is y_next.
-
-without revealing `x`, `y`, or `y_next` to any single party.  
-
-This is achieved with **additive secret sharing** and **Beaver triples**:
-
-- Client `P3` splits each input into random shares and sends them to `P0` and `P1`.  
-- Helper `P2` generates a random Beaver triple `(a, b, c)` where `c = a*b`.  
-- Parties `P0` and `P1` use the shares and the Beaver triple to compute multiplication securely.  
+- **P0**: Holds secret shares of inputs and Beaver triples. Computes partial multiplication shares `z0`.
+- **P1**: Holds secret shares of inputs and Beaver triples. Computes partial multiplication shares `z1`.
+- **P2 (Helper)**: Generates **Beaver triples** `(a, b, c = a*b)` and distributes random additive shares to `P0` and `P1`.
+- **P3 (Client)**: Provides the original inputs `(x, y)` by splitting them into random shares and sending to `P0` and `P1`.  
+  After computation, collects results `z0` and `z1` to reconstruct the final product.
 
 ---
 
+## How It Works
 
-## Files
+1. **Beaver Triple Generation**  
+   `P2` generates random Beaver triples `(a, b, c)` for each multiplication.  
+   These are secret-shared between `P0` and `P1`.
 
-- **`P0.py`** → Party 0 (computes `z0` shares)  
-- **`P1.py`** → Party 1 (computes `z1` shares)  
-- **`P2_Helper.py`** → Generates Beaver triples and distributes them  
-- **`P3_Client.py`** → Provides inputs, generates shares, and distributes them  
+2. **Input Sharing**  
+   `P3` generates random additive shares of inputs `(x, y)` and sends them to `P0` and `P1`.
+
+3. **Secure Multiplication**  
+   - `P0` and `P1` exchange masked values `d = x - a`, `e = y - b`.  
+   - Each computes its share of the product (`z0`, `z1`).  
+   - This is done in **parallel** for multiple slots using threads.
+
+4. **Reconstruction**  
+   `P3` receives `z0` from `P0` and `z1` from `P1`, and reconstructs the product `z = z0 + z1`.  
+   It also measures the **latency**.
 
 ---
-## Requirements
 
-- Python 3.x  
-- Only standard libraries are used:  
-  - `socket`  
-  - `json`  
-  - `random`  
-  - `time`
- 
----
 ## Running the Protocol
 
-The parties must be started in the following order to avoid connection issues:  
+Open **4 terminals** and run the parties in the following order:
 
-1. **Start Party 0**  
-   ```bash
-   python3 p0.py
-2. **Start Party 1**
-   ```bash
-   python3 p1.py
+```bash
+# Terminal 1 (Helper)
+python p2_helper.py
 
-3. **Start Client (P3)**
-   ```bash
-    python3 p3_client.py
-P3 splits inputs into additive shares and sends them to P0 and P1.
+# Terminal 2 (P0)
+python p0.py
 
-4. **Start Helper (P2)**
-   ```bash
-    python3 p2_helper.py
+# Terminal 3 (P1)
+python p1.py
 
-P2 distributes Beaver triples to P0 and P1.
-   
+# Terminal 4 (Client)
+python p3_client.py
